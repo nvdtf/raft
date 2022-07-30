@@ -3,6 +3,7 @@ import * as fcl from "@onflow/fcl"
 import styled from "styled-components"
 
 const Panel = styled.div`
+    background-color: white;
     border-radius: 10px;
     border: 1px solid lightgrey;
     width: 100%;

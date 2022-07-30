@@ -1,6 +1,8 @@
-import { useState } from 'react'
+import { useEffect } from 'react'
 import { Octokit } from '@octokit/rest'
 import { fetchFile, fetchRepoTree } from '../../src/lib/github'
+import { useMainReducer } from '../../src/reducers/reducer'
+import { processRepo } from '../../src/lib/raft-api'
 
 import FileMd from '../../src/components/FileMd'
 import FileScript from '../../src/components/FileScript'
@@ -15,56 +17,72 @@ const Site = styled.div`
 
 const Header = styled.div`
     width: 100%;
-    height: 50px;
-    line-height: 50px;
-    background-color: #c9f7ff;
-    padding-left: 20px;
-    font-size: 2em;
+    height: 30px;
+    line-height: 30px;
+    background-color: white;
+    padding-left: 10px;
+    font-size: 1em;
+    font-weight: bold;
+    font-family: 'Fira Code', monospace;
+    color: red;
+    border-bottom: 1px solid lightgray;
 `
 
 const LeftPanel = styled.div`
-    background-color: whitesmoke;
+    background-color: white;
     padding-top: 20px;
     padding-bottom: 20px;
     float: left;
     height: 100%;
-    width: 40%;
+    width: 30%;
+    border-right: 1px solid lightgray;
 `
 
 const MainPanel = styled.div`
+    background-color: whitesmoke;
     padding: 1em;
     float: right;
     height: 100%;
-    width: 60%;
+    width: 70%;
 `
 
-export default function Repo({objectTree, initialPanels}) {
-    const [panels, setPanels] = useState(initialPanels)
+export default function Repo({initialRepoTree, initialPath}) {
+    const {
+        repoTree,
+        currentObject,
+        open,
+    } = useMainReducer(initialRepoTree)
 
-    objectTree[0].children = objectTree[0].children.map(obj => ({...obj, onClick: () => click(obj, setPanels)}))
-    objectTree[0].onClick = () => click(objectTree[0], setPanels)
+    useEffect(() => {
+        open(initialPath)
+    }, [initialPath])
 
     return (
         <Site>
             <Header>
-                RAFT v0.1.0
+                Raft v0.1.0
             </Header>
             <LeftPanel>
                 <ObjectTree
-                    objects={objectTree}
+                    objects={[repoTree]}
+                    currentObject={currentObject}
+                    onClick={open}
                 />
             </LeftPanel>
             <MainPanel>
-                {panels[0].type == 'FileMd' &&
+                {currentObject.type == 'Document' &&
                     <FileMd
-                        header={panels[0].header}
-                        content={panels[0].content}
+                        header={currentObject.path}
+                        content={currentObject.contents}
                     />
                 }
-                {panels[0].type == 'FileScript' &&
+                {(currentObject.type == 'Transaction' ||
+                    currentObject.type == 'Script' ||
+                    currentObject.type == 'Contract') &&
+
                     <FileScript
-                        header={panels[0].header}
-                        content={panels[0].content}
+                        header={currentObject.path}
+                        content={currentObject.contents}
                     />
                 }
             </MainPanel>
@@ -72,48 +90,25 @@ export default function Repo({objectTree, initialPanels}) {
     )
 }
 
-async function click(obj, setPanelsFunc) {
-    const file = await fetchFile('navid-t', 'flow-contract-auditor-sample', obj.path)
-
-    const panels = [
-        {
-            header: obj.path,
-            content: file,
-            type: 'FileScript',
-        }
-    ]
-
-    setPanelsFunc(panels)
-}
-
 export async function getServerSideProps(context) {
-    const repo = `github.com/${context.query.owner}/${context.query.repo}`
-    const initialPath = '/README.md'
 
-    const repoTree = await fetchRepoTree(context.query.owner, context.query.repo)
-    const objectTree = [
-        {
-            title: repo,
-            type: 'Repository',
-            path: '/README.md', //fixme
-            children: repoTree,
-        }
-    ]
+    const processedRepoTree = await processRepo(context.query.owner, context.query.repo)
 
-    const initialFile = await fetchFile(context.query.owner, context.query.repo, initialPath)
+    const initialRepoTree = {
+        title: `github.com/${context.query.owner}/${context.query.repo}`,
+        type: 'Repository',
+        transactionFiles: processedRepoTree.transactions,
+        documentFiles: processedRepoTree.documents,
+        scriptFiles: processedRepoTree.scripts,
+        contractFiles: processedRepoTree.contracts,
+    }
 
-    const initialPanels = [
-        {
-            header: initialPath,
-            content: initialFile,
-            type: 'FileMd',
-        }
-    ]
+    const initialPath = 'README.md'
 
     return {
         props: {
-            objectTree,
-            initialPanels,
+            initialRepoTree,
+            initialPath,
         },
     }
 }

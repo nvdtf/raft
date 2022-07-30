@@ -1,5 +1,5 @@
 import styled from "styled-components"
-import ReactMarkdown from 'react-markdown'
+import ObjectTreeFolder from "./ObjectTreeFolder"
 
 const Panel = styled.div`
     padding: 0.5em;
@@ -8,17 +8,15 @@ const Panel = styled.div`
     flex-direction: column;
     gap: 3em;
 `
+
 const Section = styled.div`
 `
 
 const Title = styled.div`
+    font-weight: bold;
 `
 
-const Item = styled.div`
-    margin-left: 20px;
-`
-
-export default function ObjectTree({objects}) {
+export default function ObjectTree({objects, currentObject, onClick}) {
     return (
         <Panel>
             {objects.map(obj => (
@@ -26,11 +24,35 @@ export default function ObjectTree({objects}) {
                     <Title onClick={obj.onClick}>
                         {obj.title}
                     </Title>
-                    {obj.children.map(item => (
-                        <Item onClick={item.onClick}>
-                            {item.path}
-                        </Item>
-                    ))}
+
+                    <ObjectTreeFolder
+                        title='Documents'
+                        items={obj.documentFiles}
+                        currentObject={currentObject}
+                        onClick={onClick}
+                    />
+
+                    <ObjectTreeFolder
+                        title='Contracts'
+                        items={obj.contractFiles}
+                        currentObject={currentObject}
+                        onClick={onClick}
+                    />
+
+                    <ObjectTreeFolder
+                        title='Scripts'
+                        items={obj.scriptFiles}
+                        currentObject={currentObject}
+                        onClick={onClick}
+                    />
+
+                    <ObjectTreeFolder
+                        title='Transactions'
+                        items={obj.transactionFiles}
+                        currentObject={currentObject}
+                        onClick={onClick}
+                    />
+
                 </Section>
             ))}
         </Panel>
