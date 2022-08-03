@@ -6,6 +6,7 @@ const initialState = {
         type: '',
         path: '',
         contents: '',
+        args: '',
     },
 }
 
@@ -20,6 +21,7 @@ function reducer(state, action) {
                     type: item.type,
                     path: item.path,
                     contents: item.contents,
+                    arguments: item.arguments,
                 },
             }
         default:

@@ -1,6 +1,8 @@
 import * as fcl from "@onflow/fcl"
+import { useState } from "react"
 
 import styled from "styled-components"
+import ArgumentInput from "./ArgumentInput"
 
 const Panel = styled.div`
     background-color: white;
@@ -51,30 +53,38 @@ const ScriptResult = styled.div`
     padding: 5px 15px;
 `
 
-async function runScript(script) {
-    // const result = await fcl.query({
-    //     cadence: `
-    //       pub fun main(a: Int, b: Int, addr: Address): Int {
-    //         log(addr)
-    //         return a + b
-    //       }
-    //     `,
-    //     args: (arg, t) => [
-    //       arg(7, t.Int), // a: Int
-    //       arg(6, t.Int), // b: Int
-    //       arg("0xba1132bc08f82fe2", t.Address), // addr: Address
-    //     ],
-    //   });
-      const result = await fcl.query({
-        cadence: script
-    });
-    console.log(result);
+async function runScript(script, args) {
+    const result = await fcl.query({
+        cadence: script,
+        // args: (arg, t) => [
+        //     arg("test", t.String)
+        // ],
+        // args: [
+        //     cadut.mapArgument("test", "String")
+        // ]
+        // args: (arg, t) => [
+        //     arg("test", t["String"])
+        // ]
+        args: (arg, t) => args.map(a => {
+            return arg(a.value, t[a.type])
+        })
+    })
+    return result
 }
 
-export default function FileScript({header, content}) {
+export default function FileScript({header, script, args}) {
 
     // fcl.config().put("accessNode.api", "https://rest-testnet.onflow.org")
     fcl.config().put("accessNode.api", "https://rest-mainnet.onflow.org")
+
+    const [log, setLog] = useState('Ready\n')
+
+    async function execute() {
+        setLog(log + 'Executing script ...\n')
+        const result = await runScript(script, args, setLog)
+        setLog(log + 'Result: ' + result + '\n')
+    }
+
     return (
         <Panel>
             <Header>
@@ -83,16 +93,27 @@ export default function FileScript({header, content}) {
             <LeftPanel>
                 <Pre>
                     <CodePanel>
-                        {content}
+                        {script}
                     </CodePanel>
                 </Pre>
             </LeftPanel>
             <RightPanel>
                 <ArgumentsPanel>
-                    <Run onClick={() => runScript(content)}>Run Script</Run>
+                    {args && args.map(arg => (
+                        <ArgumentInput
+                            label={arg.name}
+                            type={arg.type}
+                            onChange={(v) => arg.value = v}
+                        />
+                    ))}
+                    <Run
+                        onClick={execute}
+                    >
+                        Run Script
+                    </Run>
                 </ArgumentsPanel>
                 <ScriptResult>
-                    Ready ...
+                    {log}
                 </ScriptResult>
             </RightPanel>
         </Panel>

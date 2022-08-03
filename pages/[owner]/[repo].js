@@ -82,7 +82,8 @@ export default function Repo({initialRepoTree, initialPath}) {
 
                     <FileScript
                         header={currentObject.path}
-                        content={currentObject.contents}
+                        script={currentObject.contents}
+                        args={currentObject.arguments}
                     />
                 }
             </MainPanel>
