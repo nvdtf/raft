@@ -46,33 +46,30 @@ const ArgumentsPanel = styled.div`
     height: 200px;
 `
 
-const ScriptResult = styled.div`
+const Result = styled.div`
     height: 100%;
     background-color: black;
     color: white;
     padding: 5px 15px;
 `
 
-async function runScript(script, args) {
-    const result = await fcl.query({
-        cadence: script,
-        // args: (arg, t) => [
-        //     arg("test", t.String)
-        // ],
-        // args: [
-        //     cadut.mapArgument("test", "String")
-        // ]
-        // args: (arg, t) => [
-        //     arg("test", t["String"])
-        // ]
+async function executeTransaction(code, args) {
+    const txId = await fcl.mutate({
+        cadence: code,
+        proposer: fcl.currentUser,
+        payer: fcl.currentUser,
+        authorizations: [fcl.currentUser],
+        limit: 9999,
         args: (arg, t) => args.map(a => {
             return arg(a.value, t[a.type])
         })
     })
-    return result
+
+    const tx = await fcl.tx(txId).onceSealed()
+    return tx
 }
 
-export default function FileScript({header, script, args}) {
+export default function FileTransaction({header, code, args}) {
 
     // fcl.config().put("accessNode.api", "https://rest-testnet.onflow.org")
     // fcl.config().put("accessNode.api", "https://rest-mainnet.onflow.org")
@@ -80,8 +77,8 @@ export default function FileScript({header, script, args}) {
     const [log, setLog] = useState('Ready\n')
 
     async function execute() {
-        setLog(log + 'Executing script ...\n')
-        const result = await runScript(script, args, setLog)
+        setLog(log + 'Executing transaction ...\n')
+        const result = await executeTransaction(code, args, setLog)
         setLog(log + 'Result: ' + result + '\n')
     }
 
@@ -93,7 +90,7 @@ export default function FileScript({header, script, args}) {
             <LeftPanel>
                 <Pre>
                     <CodePanel>
-                        {script}
+                        {code}
                     </CodePanel>
                 </Pre>
             </LeftPanel>
@@ -109,12 +106,12 @@ export default function FileScript({header, script, args}) {
                     <Run
                         onClick={execute}
                     >
-                        Run Script
+                        Execute Transaction
                     </Run>
                 </ArgumentsPanel>
-                <ScriptResult>
+                <Result>
                     {log}
-                </ScriptResult>
+                </Result>
             </RightPanel>
         </Panel>
     )

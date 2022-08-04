@@ -1,31 +1,19 @@
-import { useEffect } from 'react'
-import { Octokit } from '@octokit/rest'
-import { fetchFile, fetchRepoTree } from '../../src/lib/github'
+import { useEffect, useState } from 'react'
+import * as fcl from "@onflow/fcl"
+
 import { useMainReducer } from '../../src/reducers/reducer'
 import { processRepo } from '../../src/lib/raft-api'
 
+import styled from 'styled-components'
 import FileMd from '../../src/components/FileMd'
 import FileScript from '../../src/components/FileScript'
 import ObjectTree from '../../src/components/ObjectTree'
-
-import styled from 'styled-components'
+import Header from '../../src/components/Header'
+import FileTransaction from '../../src/components/FileTransaction'
 
 const Site = styled.div`
     width: 100vw;
     height: 100vh;
-`
-
-const Header = styled.div`
-    width: 100%;
-    height: 30px;
-    line-height: 30px;
-    background-color: white;
-    padding-left: 10px;
-    font-size: 1em;
-    font-weight: bold;
-    font-family: 'Fira Code', monospace;
-    color: red;
-    border-bottom: 1px solid lightgray;
 `
 
 const LeftPanel = styled.div`
@@ -53,15 +41,21 @@ export default function Repo({initialRepoTree, initialPath}) {
         open,
     } = useMainReducer(initialRepoTree)
 
+    const [user, setUser] = useState({})
+
     useEffect(() => {
         open(initialPath)
     }, [initialPath])
 
+    useEffect(() => {
+        fcl.currentUser().subscribe(user => setUser(user))
+    }, [])
+
     return (
         <Site>
-            <Header>
-                Raft v0.1.0
-            </Header>
+            <Header
+                user={user}
+            />
             <LeftPanel>
                 <ObjectTree
                     objects={[repoTree]}
@@ -76,13 +70,20 @@ export default function Repo({initialRepoTree, initialPath}) {
                         content={currentObject.contents}
                     />
                 }
-                {(currentObject.type == 'Transaction' ||
-                    currentObject.type == 'Script' ||
+                {(currentObject.type == 'Script' ||
                     currentObject.type == 'Contract') &&
 
                     <FileScript
                         header={currentObject.path}
                         script={currentObject.contents}
+                        args={currentObject.arguments}
+                    />
+                }
+                {currentObject.type == 'Transaction' &&
+
+                    <FileTransaction
+                        header={currentObject.path}
+                        code={currentObject.contents}
                         args={currentObject.arguments}
                     />
                 }
