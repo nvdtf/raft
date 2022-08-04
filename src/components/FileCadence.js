@@ -3,6 +3,7 @@ import { useState } from "react"
 
 import styled from "styled-components"
 import ArgumentInput from "./ArgumentInput"
+import Log from "./Log"
 
 const Panel = styled.div`
     background-color: white;
@@ -51,16 +52,36 @@ const Result = styled.div`
     background-color: black;
     color: white;
     padding: 5px 15px;
+    overflow: scroll;
 `
 
-async function executeTransaction(code, args) {
+async function runScript(code, args) {
+    const result = await fcl.query({
+        cadence: code,
+        // args: (arg, t) => [
+        //     arg("test", t.String)
+        // ],
+        // args: [
+        //     cadut.mapArgument("test", "String")
+        // ]
+        // args: (arg, t) => [
+        //     arg("test", t["String"])
+        // ]
+        args: (arg, t) => args?.map(a => {
+            return arg(a.value, t[a.type])
+        })
+    })
+    return result
+}
+
+async function runTransaction(code, args) {
     const txId = await fcl.mutate({
         cadence: code,
         proposer: fcl.currentUser,
         payer: fcl.currentUser,
         authorizations: [fcl.currentUser],
         limit: 9999,
-        args: (arg, t) => args.map(a => {
+        args: (arg, t) => args?.map(a => {
             return arg(a.value, t[a.type])
         })
     })
@@ -69,17 +90,32 @@ async function executeTransaction(code, args) {
     return tx
 }
 
-export default function FileTransaction({header, code, args}) {
-
-    // fcl.config().put("accessNode.api", "https://rest-testnet.onflow.org")
-    // fcl.config().put("accessNode.api", "https://rest-mainnet.onflow.org")
+export default function FileCadence({header, code, args, isScript}) {
 
     const [log, setLog] = useState('Ready\n')
 
-    async function execute() {
-        setLog(log + 'Executing transaction ...\n')
-        const result = await executeTransaction(code, args, setLog)
-        setLog(log + 'Result: ' + result + '\n')
+    async function l(what) {
+        setLog((prevLog, props) => (
+            prevLog + what + '\n'
+        ))
+    }
+
+    async function run() {
+        l('Running ...')
+
+        let result
+        try {
+            if (isScript) {
+                result = await runScript(code, args)
+            } else {
+                result = await runTransaction(code, args)
+            }
+        } catch (error) {
+            result = error
+            console.log(error)
+        }
+
+        l('Result: ' + result)
     }
 
     return (
@@ -104,13 +140,15 @@ export default function FileTransaction({header, code, args}) {
                         />
                     ))}
                     <Run
-                        onClick={execute}
+                        onClick={run}
                     >
-                        Execute Transaction
+                        Run
                     </Run>
                 </ArgumentsPanel>
                 <Result>
-                    {log}
+                    <Log
+                        log={log}
+                    />
                 </Result>
             </RightPanel>
         </Panel>

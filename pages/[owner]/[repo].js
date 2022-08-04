@@ -6,10 +6,9 @@ import { processRepo } from '../../src/lib/raft-api'
 
 import styled from 'styled-components'
 import FileMd from '../../src/components/FileMd'
-import FileScript from '../../src/components/FileScript'
 import ObjectTree from '../../src/components/ObjectTree'
 import Header from '../../src/components/Header'
-import FileTransaction from '../../src/components/FileTransaction'
+import FileCadence from '../../src/components/FileCadence'
 
 const Site = styled.div`
     width: 100vw;
@@ -73,18 +72,20 @@ export default function Repo({initialRepoTree, initialPath}) {
                 {(currentObject.type == 'Script' ||
                     currentObject.type == 'Contract') &&
 
-                    <FileScript
+                    <FileCadence
                         header={currentObject.path}
-                        script={currentObject.contents}
+                        code={currentObject.contents}
                         args={currentObject.arguments}
+                        isScript={true}
                     />
                 }
                 {currentObject.type == 'Transaction' &&
 
-                    <FileTransaction
+                    <FileCadence
                         header={currentObject.path}
                         code={currentObject.contents}
                         args={currentObject.arguments}
+                        isScript={false}
                     />
                 }
             </MainPanel>

@@ -5,9 +5,18 @@ import * as fcl from "@onflow/fcl"
 
 function MyApp({ Component, pageProps }) {
 
+  // testnet
+  // fcl.config({
+  //   "accessNode.api": "https://rest-testnet.onflow.org",
+  //   "discovery.wallet": "https://fcl-discovery.onflow.org/testnet/authn",
+  //   "app.detail.title": "Raft",
+  //   "app.detail.icon": "https://avatars.onflow.org/avatar/raft"
+  // })
+
+  // mainnet
   fcl.config({
-    "accessNode.api": "https://rest-testnet.onflow.org", // Mainnet: "https://rest-mainnet.onflow.org"
-    "discovery.wallet": "https://fcl-discovery.onflow.org/testnet/authn", // Mainnet: "https://fcl-discovery.onflow.org/authn"
+    "accessNode.api": "https://rest-mainnet.onflow.org",
+    "discovery.wallet": "https://fcl-discovery.onflow.org/authn", // Mainnet: "https://fcl-discovery.onflow.org/authn"
     "app.detail.title": "Raft",
     "app.detail.icon": "https://avatars.onflow.org/avatar/raft"
   })
