@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useRouter } from 'next/router';
 import * as fcl from "@onflow/fcl"
 
 import { useMainReducer } from '../../src/reducers/reducer'
@@ -33,7 +34,16 @@ const MainPanel = styled.div`
     width: 70%;
 `
 
-export default function Repo({initialRepoTree, initialPath}) {
+export default function Repo({initialRepoTree, initialPath, network}) {
+
+    if (network == 'Mainnet') {
+        fcl.config().put('accessNode.api', 'https://rest-mainnet.onflow.org')
+        fcl.config().put('discovery.wallet', 'https://fcl-discovery.onflow.org/authn')
+    } else if (network == 'Testnet') {
+        fcl.config().put('accessNode.api', 'https://rest-testnet.onflow.org')
+        fcl.config().put('discovery.wallet', 'https://fcl-discovery.onflow.org/testnet/authn')
+    }
+
     const {
         repoTree,
         currentObject,
@@ -50,10 +60,25 @@ export default function Repo({initialRepoTree, initialPath}) {
         fcl.currentUser().subscribe(user => setUser(user))
     }, [])
 
+    const router = useRouter()
+
+    function onNetworkChange(newNetwork) {
+
+        fcl.unauthenticate()
+
+        if (newNetwork == 'Testnet') {
+            router.push(window.location.pathname + '?testnet')
+        } else if (newNetwork == 'Mainnet') {
+            router.push(window.location.pathname.split('?')[0])
+        }
+    }
+
     return (
         <Site>
             <Header
                 user={user}
+                network={network}
+                onNetworkChange={onNetworkChange}
             />
             <LeftPanel>
                 <ObjectTree
@@ -95,7 +120,12 @@ export default function Repo({initialRepoTree, initialPath}) {
 
 export async function getServerSideProps(context) {
 
-    const processedRepoTree = await processRepo(context.query.owner, context.query.repo)
+    let network = 'Mainnet'
+    if (context.query.hasOwnProperty('testnet')) {
+        network = 'Testnet'
+    }
+
+    const processedRepoTree = await processRepo(context.query.owner, context.query.repo, network)
 
     const initialRepoTree = {
         title: `github.com/${context.query.owner}/${context.query.repo}`,
@@ -112,6 +142,7 @@ export async function getServerSideProps(context) {
         props: {
             initialRepoTree,
             initialPath,
+            network,
         },
     }
 }

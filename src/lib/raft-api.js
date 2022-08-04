@@ -1,4 +1,4 @@
-export async function processRepo(owner, repo) {
+export async function processRepo(owner, repo, network) {
     const rawResponse = await fetch(
         `http://localhost:8080/processRepo`,
         {
@@ -6,7 +6,7 @@ export async function processRepo(owner, repo) {
             body: JSON.stringify({
                 owner: owner,
                 repo: repo,
-                network: 'mainnet'
+                network: network,
             })
         }
     )
