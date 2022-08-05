@@ -12,43 +12,44 @@ import Header from '../../src/components/Header'
 import FileCadence from '../../src/components/FileCadence'
 
 const Site = styled.div`
+    font-family: 'Fira Code', monospace;
     width: 100vw;
     height: 100vh;
 `
 
 const LeftPanel = styled.div`
     background-color: white;
-    padding-top: 20px;
-    padding-bottom: 20px;
+    padding-top: 10px;
     float: left;
     height: 100%;
-    width: 30%;
+    width: 20%;
+    overflow: scroll;
     border-right: 1px solid lightgray;
 `
 
 const MainPanel = styled.div`
     background-color: whitesmoke;
-    padding: 1em;
+    padding: 10px;
     float: right;
     height: 100%;
-    width: 70%;
+    width: 80%;
 `
 
-export default function Repo({initialRepoTree, initialPath, network}) {
+export default function Repo({processedRepo, initialPath}) {
 
-    if (network == 'Mainnet') {
+    if (processedRepo.network == 'Mainnet') {
         fcl.config().put('accessNode.api', 'https://rest-mainnet.onflow.org')
         fcl.config().put('discovery.wallet', 'https://fcl-discovery.onflow.org/authn')
-    } else if (network == 'Testnet') {
+    } else if (processedRepo.network == 'Testnet') {
         fcl.config().put('accessNode.api', 'https://rest-testnet.onflow.org')
         fcl.config().put('discovery.wallet', 'https://fcl-discovery.onflow.org/testnet/authn')
     }
 
     const {
-        repoTree,
+        repo,
         currentObject,
         open,
-    } = useMainReducer(initialRepoTree)
+    } = useMainReducer(processedRepo)
 
     const [user, setUser] = useState({})
 
@@ -77,12 +78,13 @@ export default function Repo({initialRepoTree, initialPath, network}) {
         <Site>
             <Header
                 user={user}
-                network={network}
+                repoPath={repo.path}
+                network={repo.network}
                 onNetworkChange={onNetworkChange}
             />
             <LeftPanel>
                 <ObjectTree
-                    objects={[repoTree]}
+                    objects={[repo]}
                     currentObject={currentObject}
                     onClick={open}
                 />
@@ -125,24 +127,21 @@ export async function getServerSideProps(context) {
         network = 'Testnet'
     }
 
-    const processedRepoTree = await processRepo(context.query.owner, context.query.repo, network)
+    const result = await processRepo(context.query.owner, context.query.repo, network)
 
-    const initialRepoTree = {
-        title: `github.com/${context.query.owner}/${context.query.repo}`,
-        type: 'Repository',
-        transactionFiles: processedRepoTree.transactions,
-        documentFiles: processedRepoTree.documents,
-        scriptFiles: processedRepoTree.scripts,
-        contractFiles: processedRepoTree.contracts,
+    const repo = {
+        path: `github.com/${context.query.owner}/${context.query.repo}`,
+        network,
+        transactionFiles: result.transactions,
+        documentFiles: result.documents,
+        scriptFiles: result.scripts,
+        contractFiles: result.contracts,
     }
-
-    const initialPath = 'README.md'
 
     return {
         props: {
-            initialRepoTree,
-            initialPath,
-            network,
+            processedRepo: repo,
+            initialPath: 'README.md',
         },
     }
 }

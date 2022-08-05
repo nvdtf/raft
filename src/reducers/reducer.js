@@ -1,7 +1,7 @@
 import { useReducer } from "react"
 
 const initialState = {
-    repoTree: {},
+    repo: {},
     currentObject: {
         type: '',
         path: '',
@@ -13,7 +13,12 @@ const initialState = {
 function reducer(state, action) {
     switch(action.type) {
         case "open":
-            const allFiles = state.repoTree.documentFiles.concat(state.repoTree.scriptFiles, state.repoTree.transactionFiles, state.repoTree.contractFiles)
+            const allFiles =
+                state.repo.documentFiles.concat(
+                state.repo.scriptFiles,
+                state.repo.transactionFiles,
+                state.repo.contractFiles,
+            )
             const item = allFiles.find(item => item.path == action.path)
             return {
                 ...state,
@@ -29,10 +34,10 @@ function reducer(state, action) {
     }
 }
 
-export function useMainReducer(repoTree) {
+export function useMainReducer(repo) {
     const [state, dispatch] = useReducer(reducer, {
         ...initialState,
-        repoTree,
+        repo,
     })
 
     return {

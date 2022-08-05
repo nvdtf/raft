@@ -16,7 +16,6 @@ const Panel = styled.div`
 
 const Header = styled.div`
     padding: 5px;
-    font-family: 'Fira Code', monospace;
     background-color: whitesmoke;
 `
 

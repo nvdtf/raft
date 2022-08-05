@@ -6,17 +6,18 @@ const Panel = styled.div`
     border: 1px solid lightgrey;
     width: 100%;
     height: 100%;
-    overflow: hidden;
+    overflow: scroll;
 `
 
 const Header = styled.div`
     padding: 5px;
-    font-family: 'Fira Code', monospace;
-    background-color: whitesmoke;
+    background-color: white;
+    border-bottom: 1px solid lightgray;
 `
 
 const ContentPanel = styled.div`
-    padding: 5px 15px;
+    padding: 1px 15px;
+    background-color: white;
 `
 
 export default function FileMd({header, content}) {
