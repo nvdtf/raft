@@ -5,10 +5,8 @@ import SignInOut from '../../src/components/SignInOut'
 import Spinner from './Spinner'
 
 const Wrapper = styled.div`
-    width: 100%;
-    height: 40px;
+    height: 100%;
     background-color: honeydew;
-    border-bottom: 1px solid lightgray;
     display: flex;
     flex-direction: row;
     justify-content: space-between;

@@ -17,22 +17,36 @@ const Site = styled.div`
     height: 100vh;
 `
 
+const HeaderPanel = styled.div`
+    width: 100%;
+    height: 40px;
+    border-bottom: 1px solid lightgray;
+`
+
+const MainPanel = styled.div`
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 40px;
+    bottom: 0;
+`
+
 const LeftPanel = styled.div`
     background-color: white;
     padding-top: 10px;
     float: left;
     height: 100%;
-    width: 20%;
+    width: 30%;
     overflow: scroll;
     border-right: 1px solid lightgray;
 `
 
-const MainPanel = styled.div`
+const ObjectPanel = styled.div`
     background-color: whitesmoke;
     padding: 10px;
     float: right;
     height: 100%;
-    width: 80%;
+    width: 70%;
 `
 
 export default function Repo({processedRepo, initialPath}) {
@@ -76,45 +90,49 @@ export default function Repo({processedRepo, initialPath}) {
 
     return (
         <Site>
-            <Header
-                user={user}
-                repoPath={repo.path}
-                network={repo.network}
-                onNetworkChange={onNetworkChange}
-            />
-            <LeftPanel>
-                <ObjectTree
-                    objects={[repo]}
-                    currentObject={currentObject}
-                    onClick={open}
+            <HeaderPanel>
+                <Header
+                    user={user}
+                    repoPath={repo.path}
+                    network={repo.network}
+                    onNetworkChange={onNetworkChange}
                 />
-            </LeftPanel>
+            </HeaderPanel>
             <MainPanel>
-                {currentObject.type == 'Document' &&
-                    <FileMd
-                        header={currentObject.path}
-                        content={currentObject.contents}
+                <LeftPanel>
+                    <ObjectTree
+                        objects={[repo]}
+                        currentObject={currentObject}
+                        onClick={open}
                     />
-                }
-                {(currentObject.type == 'Script' ||
-                    currentObject.type == 'Contract') &&
+                </LeftPanel>
+                <ObjectPanel>
+                    {currentObject.type == 'Document' &&
+                        <FileMd
+                            header={currentObject.path}
+                            content={currentObject.contents}
+                        />
+                    }
+                    {(currentObject.type == 'Script' ||
+                        currentObject.type == 'Contract') &&
 
-                    <FileCadence
-                        header={currentObject.path}
-                        code={currentObject.contents}
-                        args={currentObject.arguments}
-                        isScript={true}
-                    />
-                }
-                {currentObject.type == 'Transaction' &&
+                        <FileCadence
+                            header={currentObject.path}
+                            code={currentObject.contents}
+                            args={currentObject.arguments}
+                            isScript={true}
+                        />
+                    }
+                    {currentObject.type == 'Transaction' &&
 
-                    <FileCadence
-                        header={currentObject.path}
-                        code={currentObject.contents}
-                        args={currentObject.arguments}
-                        isScript={false}
-                    />
-                }
+                        <FileCadence
+                            header={currentObject.path}
+                            code={currentObject.contents}
+                            args={currentObject.arguments}
+                            isScript={false}
+                        />
+                    }
+                </ObjectPanel>
             </MainPanel>
         </Site>
     )
