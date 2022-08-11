@@ -1,57 +1,46 @@
 import * as fcl from "@onflow/fcl"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 import styled from "styled-components"
-import ArgumentInput from "./ArgumentInput"
+import ArgumentsPanel from "./ArgumentsPanel"
 import Log from "./Log"
+import CodePanel from "./CodePanel"
+import Panel from "./Panel"
 
-const Panel = styled.div`
-    background-color: white;
+const FloatingPanel = styled.div`
+    position: absolute;
+    top: 70px;
+    right: 40px;
+    border: 1px solid lightgray;
     border-radius: 10px;
-    border: 1px solid lightgrey;
-    width: 100%;
-    height: 100%;
     overflow: hidden;
-`
-
-const Header = styled.div`
-    padding: 5px;
-    background-color: whitesmoke;
-`
-
-const LeftPanel = styled.div`
-    float: left;
-    width: 70%;
-`
-
-const RightPanel = styled.div`
-    float: right;
-    width: 30%;
-    height: 100%;
-    padding: 5px 15px;
-`
-
-const CodePanel = styled.code`
-`
-
-const Pre = styled.pre`
-    padding: 5px 15px;
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    gap: 20px;
+    background-color: white;
 `
 
 const Run = styled.button`
-    padding: 5px 15px;
-`
-
-const ArgumentsPanel = styled.div`
-    height: 200px;
+    font-family: 'Fira Code', monospace;
+    font-size: 1em;
+    background-color: green;
+    color: white;
+    border: 1px solid black;
+    padding: 1px 15px;
+    padding: 5px 30px 5px 30px;
+    align-self: center;
 `
 
 const Result = styled.div`
-    height: 100%;
-    background-color: black;
-    color: white;
+    background-color: whitesmoke;
+    border: 1px solid lightgray;
+    border-radius: 10px;
+    color: dimgray;
     padding: 5px 15px;
     overflow: scroll;
+    font-size: 0.75em;
+    width: 400px;
 `
 
 async function runScript(code, args) {
@@ -89,7 +78,11 @@ async function runTransaction(code, args) {
     return tx
 }
 
-export default function FileCadence({header, code, args, isScript}) {
+export default function FileCadence({ currentObject}) {
+
+    const code = currentObject.contents
+
+    const isScript = currentObject.type == 'Script'
 
     const [log, setLog] = useState('Ready\n')
 
@@ -105,9 +98,9 @@ export default function FileCadence({header, code, args, isScript}) {
         let result
         try {
             if (isScript) {
-                result = await runScript(code, args)
+                result = await runScript(code, currentObject.arguments)
             } else {
-                result = await runTransaction(code, args)
+                result = await runTransaction(code, currentObject.arguments)
             }
         } catch (error) {
             result = error
@@ -117,39 +110,29 @@ export default function FileCadence({header, code, args, isScript}) {
         l('Result: ' + result)
     }
 
-    return (
-        <Panel>
-            <Header>
-                {header}
-            </Header>
-            <LeftPanel>
-                <Pre>
-                    <CodePanel>
-                        {code}
-                    </CodePanel>
-                </Pre>
-            </LeftPanel>
-            <RightPanel>
-                <ArgumentsPanel>
-                    {args && args.map(arg => (
-                        <ArgumentInput
-                            label={arg.name}
-                            type={arg.type}
-                            onChange={(v) => arg.value = v}
-                        />
-                    ))}
-                    <Run
-                        onClick={run}
-                    >
-                        Run
-                    </Run>
-                </ArgumentsPanel>
+    const contents = (
+        <>
+            <FloatingPanel>
+                <ArgumentsPanel
+                    args={currentObject.arguments}
+                />
+                <Run onClick={run}>Run</Run>
                 <Result>
                     <Log
                         log={log}
                     />
                 </Result>
-            </RightPanel>
-        </Panel>
+            </FloatingPanel>
+            <CodePanel
+                code={code}
+            />
+        </>
+    )
+
+    return (
+        <Panel
+            header={currentObject.path}
+            contents={contents}
+        />
     )
 }

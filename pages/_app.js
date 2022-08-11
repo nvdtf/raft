@@ -24,6 +24,8 @@ function MyApp({ Component, pageProps }) {
 
         {/* https://github.com/sindresorhus/github-markdown-css */}
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.1.0/github-markdown-light.css" integrity="sha512-1d9gwwC3dNW3O+lGwY8zTQrh08a41Ejci46DdzY1aQbqi/7Qr8Asp4ycWPsoD52tKXKrgu8h/lSpig1aAkvlMw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+        <link rel="stylesheet" href="https://esm.sh/@wooorm/starry-night@1/style/light.css"/>
       </Head>
       <Component key={router.asPath} {...pageProps} />
     </>

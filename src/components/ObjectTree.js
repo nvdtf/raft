@@ -5,6 +5,7 @@ const Panel = styled.div`
     display: flex;
     flex-direction: column;
     gap: 3em;
+    width: fit-content;
 `
 
 export default function ObjectTree({objects, currentObject, onClick}) {

@@ -29,24 +29,24 @@ const MainPanel = styled.div`
     right: 0;
     top: 40px;
     bottom: 0;
+    display: flex;
 `
 
 const LeftPanel = styled.div`
     background-color: white;
     padding-top: 10px;
-    float: left;
+    padding-right: 10px;
     height: 100%;
-    width: 30%;
-    overflow: scroll;
     border-right: 1px solid lightgray;
+    width: fit-content;
 `
 
 const ObjectPanel = styled.div`
     background-color: whitesmoke;
     padding: 10px;
-    float: right;
     height: 100%;
-    width: 70%;
+    flex-grow: 1;
+    overflow: scroll;
 `
 
 export default function Repo({processedRepo, initialPath}) {
@@ -114,22 +114,11 @@ export default function Repo({processedRepo, initialPath}) {
                         />
                     }
                     {(currentObject.type == 'Script' ||
+                        currentObject.type == 'Transaction' ||
                         currentObject.type == 'Contract') &&
 
                         <FileCadence
-                            header={currentObject.path}
-                            code={currentObject.contents}
-                            args={currentObject.arguments}
-                            isScript={true}
-                        />
-                    }
-                    {currentObject.type == 'Transaction' &&
-
-                        <FileCadence
-                            header={currentObject.path}
-                            code={currentObject.contents}
-                            args={currentObject.arguments}
-                            isScript={false}
+                            currentObject={currentObject}
                         />
                     }
                 </ObjectPanel>
