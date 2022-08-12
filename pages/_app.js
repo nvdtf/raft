@@ -1,9 +1,15 @@
 import '../styles/globals.css'
 
+import { useState } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head'
 
 import * as fcl from "@onflow/fcl"
+
+import { HighlighterContext } from "../src/context"
+
+import {createStarryNight} from '@wooorm/starry-night'
+import sourceCadence from '@wooorm/starry-night/lang/source.cadence.js'
 
 function MyApp({ Component, pageProps }) {
 
@@ -12,8 +18,16 @@ function MyApp({ Component, pageProps }) {
     "app.detail.icon": "https://avatars.onflow.org/avatar/raft"
   })
 
-  const router = useRouter()
+  const [highlighter, setHighlighter] = useState()
+  const initHighlighter = async () => {
+    if (!highlighter) {
+      const starryNight = await createStarryNight([sourceCadence])
+      setHighlighter(starryNight)
+    }
+  }
+  initHighlighter()
 
+  const router = useRouter()
 
   return (
     <>
@@ -27,7 +41,12 @@ function MyApp({ Component, pageProps }) {
 
         <link rel="stylesheet" href="https://esm.sh/@wooorm/starry-night@1/style/light.css"/>
       </Head>
-      <Component key={router.asPath} {...pageProps} />
+
+      <HighlighterContext.Provider value={highlighter}>
+
+        <Component key={router.asPath} {...pageProps} />
+
+      </HighlighterContext.Provider>
     </>
   )
 }
