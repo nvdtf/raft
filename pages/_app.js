@@ -18,14 +18,13 @@ function MyApp({ Component, pageProps }) {
     "app.detail.icon": "https://avatars.onflow.org/avatar/raft"
   })
 
-  const [highlighter, setHighlighter] = useState()
-  const initHighlighter = async () => {
+  const [highlighter, setHighlighter] = useState();
+  (async () => {
     if (!highlighter) {
       const starryNight = await createStarryNight([sourceCadence])
       setHighlighter(starryNight)
     }
-  }
-  initHighlighter()
+  })()
 
   const router = useRouter()
 
