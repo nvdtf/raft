@@ -85,6 +85,8 @@ export default function FileCadence({ currentObject}) {
     const initialLog = 'Ready\n'
     const [log, setLog] = useState(initialLog)
 
+    const [running, setRunning] = useState(false)
+
     async function l(what) {
         setLog((prevLog, props) => (
             prevLog + what + '\n'
@@ -98,6 +100,8 @@ export default function FileCadence({ currentObject}) {
     async function run() {
         l('Running ...')
 
+        setRunning(true)
+
         let result
         try {
             if (isScript) {
@@ -110,6 +114,7 @@ export default function FileCadence({ currentObject}) {
             console.log(error)
         }
 
+        setRunning(false)
         l('Result: ' + JSON.stringify(result))
     }
 
@@ -120,7 +125,7 @@ export default function FileCadence({ currentObject}) {
                     <ArgumentsPanel
                         args={currentObject.arguments}
                     />
-                    <Run onClick={run}>Run</Run>
+                    <Run onClick={run} disabled={running}>Run</Run>
                     <LogPanel>
                         <Log
                             log={log}
