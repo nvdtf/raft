@@ -32,15 +32,13 @@ const Run = styled.button`
     align-self: center;
 `
 
-const Result = styled.div`
-    background-color: whitesmoke;
-    border: 1px solid lightgray;
-    border-radius: 10px;
-    color: dimgray;
-    padding: 5px 15px;
+const LogPanel = styled.div`
     overflow: scroll;
     font-size: 0.75em;
     width: 400px;
+    max-height: 400px;
+    border: 1px solid lightgray;
+    border-radius: 10px;
 `
 
 async function runScript(code, args) {
@@ -84,13 +82,18 @@ export default function FileCadence({ currentObject}) {
 
     const isScript = currentObject.type == 'Script'
 
-    const [log, setLog] = useState('Ready\n')
+    const initialLog = 'Ready\n'
+    const [log, setLog] = useState(initialLog)
 
     async function l(what) {
         setLog((prevLog, props) => (
             prevLog + what + '\n'
         ))
     }
+
+    useEffect(() => {
+        setLog(initialLog)
+    }, [currentObject.path])
 
     async function run() {
         l('Running ...')
@@ -107,22 +110,24 @@ export default function FileCadence({ currentObject}) {
             console.log(error)
         }
 
-        l('Result: ' + result)
+        l('Result: ' + JSON.stringify(result))
     }
 
     const contents = (
         <>
-            <FloatingPanel>
-                <ArgumentsPanel
-                    args={currentObject.arguments}
-                />
-                <Run onClick={run}>Run</Run>
-                <Result>
-                    <Log
-                        log={log}
+            {currentObject.type != 'Contract' && (
+                <FloatingPanel>
+                    <ArgumentsPanel
+                        args={currentObject.arguments}
                     />
-                </Result>
-            </FloatingPanel>
+                    <Run onClick={run}>Run</Run>
+                    <LogPanel>
+                        <Log
+                            log={log}
+                        />
+                    </LogPanel>
+                </FloatingPanel>
+            )}
             <CodePanel
                 code={code}
             />

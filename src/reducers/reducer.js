@@ -23,6 +23,7 @@ function reducer(state, action) {
             return {
                 ...state,
                 currentObject: {
+                    ...state.currentObject,
                     type: item.type,
                     path: item.path,
                     contents: item.contents,
