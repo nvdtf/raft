@@ -19,15 +19,6 @@ const LeftSide = styled.div`
     align-items: center;
 `
 
-const FeedbackButton = styled.a`
-    font-family: 'Fira Code', monospace;
-    font-size: 1em;
-    background-color: blue;
-    color: white;
-    border: 1px solid black;
-    padding: 1px 15px;
-`
-
 const Logo = styled.div`
     padding-left: 10px;
     font-size: 1em;
@@ -76,11 +67,6 @@ export default function Header({ user, repoPath, network, onNetworkChange }) {
                         <Spinner/>
                     </>
                 }
-                <FeedbackButton
-                    href="mailto:navid@dapperlabs.com"
-                >
-                    Submit Feedback
-                </FeedbackButton>
             </LeftSide>
             <Path>
                 {repoPath}

@@ -39,6 +39,9 @@ const LeftPanel = styled.div`
     height: 100%;
     border-right: 1px solid lightgray;
     width: fit-content;
+    display: flex;
+    flex-direction: column;
+    gap: 50px;
 `
 
 const ObjectPanel = styled.div`
@@ -47,6 +50,16 @@ const ObjectPanel = styled.div`
     height: 100%;
     flex-grow: 1;
     overflow: scroll;
+`
+
+const FeedbackButton = styled.a`
+    font-family: 'Fira Code', monospace;
+    font-size: 1em;
+    background-color: blue;
+    color: white;
+    border: 1px solid black;
+    padding: 1px 15px;
+    align-self: center;
 `
 
 export default function Repo({processedRepo, initialPath}) {
@@ -105,6 +118,11 @@ export default function Repo({processedRepo, initialPath}) {
                         currentObject={currentObject}
                         onClick={open}
                     />
+                    <FeedbackButton
+                        href="mailto:navid@dapperlabs.com"
+                    >
+                        Submit Feedback
+                    </FeedbackButton>
                 </LeftPanel>
                 <ObjectPanel>
                     {currentObject.type == 'Document' &&
