@@ -64,7 +64,7 @@ export default function Header({ user, repoPath, network, onNetworkChange }) {
                         <NetworkChangeStatus>
                             {networkStatus}
                         </NetworkChangeStatus>
-                        <Spinner/>
+                        <Spinner color="blue"/>
                     </>
                 }
             </LeftSide>

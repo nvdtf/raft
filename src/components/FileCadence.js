@@ -6,6 +6,7 @@ import ArgumentsPanel from "./ArgumentsPanel"
 import Log from "./Log"
 import CodePanel from "./CodePanel"
 import Panel from "./Panel"
+import Spinner from './Spinner'
 
 const FloatingPanel = styled.div`
     position: absolute;
@@ -28,8 +29,8 @@ const Run = styled.button`
     background-color: green;
     color: white;
     border: 1px solid black;
-    padding: 1px 15px;
-    padding: 5px 30px 5px 30px;
+    padding: 5px 30px;
+    width: 100px;
     align-self: center;
 `
 
@@ -93,19 +94,22 @@ export default function FileCadence({ currentObject}) {
             })
         })
 
-        l('Sending transaction ID ' + txId + ' ...')
-
-        let result = await fcl.tx(txId).onceFinalized()
-        l('Finalized: ' + JSON.stringify(result))
-        result = await fcl.tx(txId).onceExecuted()
-        l('Executed: ' + JSON.stringify(result))
+        l('Transaction ID: ' + txId)
+        l('Executing transaction ...')
+        let result = await fcl.tx(txId).onceExecuted()
+        l('Executed! Waiting for seal ...')
         result = await fcl.tx(txId).onceSealed()
-        l('Sealed: ' + JSON.stringify(result))
+        l('Sealed!')
         return result.events
     }
 
     async function run() {
-        l('Running ...')
+        if (isScript) {
+            l('Running script ...')
+        } else {
+            l('Waiting for signature ...')
+        }
+
 
         setRunning(true)
 
@@ -116,13 +120,13 @@ export default function FileCadence({ currentObject}) {
             } else {
                 result = await runTransaction(code, currentObject.arguments)
             }
+            l('Result: ' + JSON.stringify(result, null, '\t'))
         } catch (error) {
-            result = error
+            l('Failed! ' + error)
             console.log(error)
         }
 
         setRunning(false)
-        l('Result: ' + JSON.stringify(result))
     }
 
     const contents = (
@@ -132,7 +136,12 @@ export default function FileCadence({ currentObject}) {
                     <ArgumentsPanel
                         args={currentObject.arguments}
                     />
-                    <Run onClick={run} disabled={running}>Run</Run>
+                    <Run onClick={run} disabled={running}>
+                        {running
+                            ? <Spinner color="white"/>
+                            : "Run"
+                        }
+                    </Run>
                     <LogPanel>
                         <Log
                             log={log}
