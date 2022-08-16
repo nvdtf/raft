@@ -19,6 +19,7 @@ const FloatingPanel = styled.div`
     padding: 10px;
     gap: 20px;
     background-color: white;
+    width: 500px;
 `
 
 const Run = styled.button`
@@ -35,7 +36,6 @@ const Run = styled.button`
 const LogPanel = styled.div`
     overflow: scroll;
     font-size: 0.75em;
-    width: 400px;
     max-height: 400px;
     border: 1px solid lightgray;
     border-radius: 10px;
@@ -60,22 +60,6 @@ async function runScript(code, args) {
     return result
 }
 
-async function runTransaction(code, args) {
-    const txId = await fcl.mutate({
-        cadence: code,
-        proposer: fcl.currentUser,
-        payer: fcl.currentUser,
-        authorizations: [fcl.currentUser],
-        limit: 9999,
-        args: (arg, t) => args?.map(a => {
-            return arg(a.value, t[a.type])
-        })
-    })
-
-    const tx = await fcl.tx(txId).onceSealed()
-    return tx
-}
-
 export default function FileCadence({ currentObject}) {
 
     const code = currentObject.contents
@@ -96,6 +80,29 @@ export default function FileCadence({ currentObject}) {
     useEffect(() => {
         setLog(initialLog)
     }, [currentObject.path])
+
+    async function runTransaction(code, args) {
+        const txId = await fcl.mutate({
+            cadence: code,
+            proposer: fcl.currentUser,
+            payer: fcl.currentUser,
+            authorizations: [fcl.currentUser],
+            limit: 9999,
+            args: (arg, t) => args?.map(a => {
+                return arg(a.value, t[a.type])
+            })
+        })
+
+        l('Sending transaction ID ' + txId + ' ...')
+
+        let result = await fcl.tx(txId).onceFinalized()
+        l('Finalized: ' + JSON.stringify(result))
+        result = await fcl.tx(txId).onceExecuted()
+        l('Executed: ' + JSON.stringify(result))
+        result = await fcl.tx(txId).onceSealed()
+        l('Sealed: ' + JSON.stringify(result))
+        return result.events
+    }
 
     async function run() {
         l('Running ...')
