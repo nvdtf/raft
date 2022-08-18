@@ -10,6 +10,7 @@ import FileMd from '../../src/components/FileMd'
 import ObjectTree from '../../src/components/ObjectTree'
 import Header from '../../src/components/Header'
 import FileCadence from '../../src/components/FileCadence'
+import Panel from '../../src/components/Panel'
 
 const Site = styled.div`
     font-family: 'Fira Code', monospace;
@@ -62,7 +63,19 @@ const FeedbackButton = styled.a`
     align-self: center;
 `
 
-export default function Repo({processedRepo, initialPath}) {
+const ErrorPanel = styled.div`
+    position: absolute;
+    left: 40px;
+    right: 40px;
+    top: 40px;
+`
+
+const ErrorMessage = styled.div`
+    color: red;
+    margin-top: 30px;
+`
+
+export default function Repo({processedRepo, initialPath, error}) {
 
     if (processedRepo.network == 'Mainnet') {
         fcl.config().put('accessNode.api', 'https://rest-mainnet.onflow.org')
@@ -81,7 +94,9 @@ export default function Repo({processedRepo, initialPath}) {
     const [user, setUser] = useState({})
 
     useEffect(() => {
-        open(initialPath)
+        if (initialPath) {
+            open(initialPath)
+        }
     }, [initialPath])
 
     useEffect(() => {
@@ -112,34 +127,47 @@ export default function Repo({processedRepo, initialPath}) {
                 />
             </HeaderPanel>
             <MainPanel>
-                <LeftPanel>
-                    <ObjectTree
-                        objects={[repo]}
-                        currentObject={currentObject}
-                        onClick={open}
+            {error
+            ? (
+                <ErrorPanel>
+                    <Panel
+                        header='Error'
+                        contents={<ErrorMessage>{error}</ErrorMessage>}
                     />
-                    <FeedbackButton
-                        href="mailto:navid@dapperlabs.com"
-                    >
-                        Submit Feedback
-                    </FeedbackButton>
-                </LeftPanel>
-                <ObjectPanel>
-                    {currentObject.type == 'Document' &&
-                        <FileMd
-                            header={currentObject.path}
-                            content={currentObject.contents}
-                        />
-                    }
-                    {(currentObject.type == 'Script' ||
-                        currentObject.type == 'Transaction' ||
-                        currentObject.type == 'Contract') &&
-
-                        <FileCadence
+                </ErrorPanel>
+            ):(
+                <>
+                    <LeftPanel>
+                        <ObjectTree
+                            objects={[repo]}
                             currentObject={currentObject}
+                            onClick={open}
                         />
-                    }
-                </ObjectPanel>
+                        <FeedbackButton
+                            href="mailto:navid@dapperlabs.com"
+                        >
+                            Submit Feedback
+                        </FeedbackButton>
+                    </LeftPanel>
+                    <ObjectPanel>
+                        {currentObject.type == 'Document' &&
+                            <FileMd
+                                header={currentObject.path}
+                                content={currentObject.contents}
+                            />
+                        }
+                        {(currentObject.type == 'Script' ||
+                            currentObject.type == 'Transaction' ||
+                            currentObject.type == 'Contract') &&
+
+                            <FileCadence
+                                currentObject={currentObject}
+                            />
+                        }
+                    </ObjectPanel>
+                </>
+            )}
+
             </MainPanel>
         </Site>
     )
@@ -152,21 +180,37 @@ export async function getServerSideProps(context) {
         network = 'Testnet'
     }
 
-    const result = await processRepo(context.query.owner, context.query.repo, network)
-
     const repo = {
         path: `github.com/${context.query.owner}/${context.query.repo}`,
         network,
-        transactionFiles: result.transactions,
-        documentFiles: result.documents,
-        scriptFiles: result.scripts,
-        contractFiles: result.contracts,
+        transactionFiles: [],
+        documentFiles: [],
+        scriptFiles: [],
+        contractFiles: [],
     }
 
-    return {
-        props: {
-            processedRepo: repo,
-            initialPath: 'README.md',
-        },
+    try {
+        const result = await processRepo(context.query.owner, context.query.repo, network)
+
+        repo.transactionFiles = result.transactions
+        repo.documentFiles = result.documents
+        repo.scriptFiles = result.scripts
+        repo.contractFiles = result.contracts
+
+        return {
+            props: {
+                processedRepo: repo,
+                initialPath: 'README.md',
+                error: '',
+            },
+        }
+    } catch (error) {
+        return {
+            props: {
+                processedRepo: repo,
+                initialPath: '',
+                error: JSON.stringify(error),
+            },
+        }
     }
 }

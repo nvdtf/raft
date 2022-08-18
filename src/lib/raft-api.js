@@ -13,5 +13,9 @@ export async function processRepo(owner, repo, network) {
 
     const content = await rawResponse.json()
 
+    if (content.error) {
+        throw content.error
+    }
+
     return content
 }

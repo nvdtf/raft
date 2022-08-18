@@ -8,6 +8,14 @@ const Panel = styled.div`
     width: fit-content;
 `
 
+function sort(items) {
+    return items.sort((a, b) => {
+        if (a.path > b.path) return 1;
+        if (a.path < b.path) return -1;
+        return 0;
+    })
+}
+
 export default function ObjectTree({objects, currentObject, onClick}) {
     return (
         <Panel>
@@ -15,28 +23,28 @@ export default function ObjectTree({objects, currentObject, onClick}) {
                 <div>
                     <ObjectTreeFolder
                         title='Documents'
-                        items={obj.documentFiles}
+                        items={sort(obj.documentFiles)}
                         currentObject={currentObject}
                         onClick={onClick}
                     />
 
                     <ObjectTreeFolder
                         title='Contracts'
-                        items={obj.contractFiles}
+                        items={sort(obj.contractFiles)}
                         currentObject={currentObject}
                         onClick={onClick}
                     />
 
                     <ObjectTreeFolder
                         title='Scripts'
-                        items={obj.scriptFiles}
+                        items={sort(obj.scriptFiles)}
                         currentObject={currentObject}
                         onClick={onClick}
                     />
 
                     <ObjectTreeFolder
                         title='Transactions'
-                        items={obj.transactionFiles}
+                        items={sort(obj.transactionFiles)}
                         currentObject={currentObject}
                         onClick={onClick}
                     />

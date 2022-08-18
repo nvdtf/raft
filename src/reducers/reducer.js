@@ -7,6 +7,8 @@ const initialState = {
         path: '',
         contents: '',
         args: '',
+        errors: [],
+        address: '',
     },
 }
 
@@ -28,6 +30,8 @@ function reducer(state, action) {
                     path: item.path,
                     contents: item.contents,
                     arguments: item.arguments,
+                    errors: item.errors,
+                    address: item.address,
                 },
             }
         default:

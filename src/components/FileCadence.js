@@ -18,6 +18,7 @@ const FloatingPanel = styled.div`
     display: flex;
     flex-direction: column;
     padding: 10px;
+    padding-top: 20px;
     gap: 20px;
     background-color: white;
     width: 500px;
@@ -42,6 +43,14 @@ const LogPanel = styled.div`
     border-radius: 10px;
 `
 
+const ErrorsPanel = styled.div`
+    border: 1px solid red;
+    padding: 10px;
+    color: red;
+    white-space: pre;
+    overflow: scroll;
+`
+
 async function runScript(code, args) {
     const result = await fcl.query({
         cadence: code,
@@ -61,7 +70,7 @@ async function runScript(code, args) {
     return result
 }
 
-export default function FileCadence({ currentObject}) {
+export default function FileCadence({ currentObject }) {
 
     const code = currentObject.contents
 
@@ -71,6 +80,7 @@ export default function FileCadence({ currentObject}) {
     const [log, setLog] = useState(initialLog)
 
     const [running, setRunning] = useState(false)
+    const [runDisabled, setRunDisabled] = useState(false)
 
     async function l(what) {
         setLog((prevLog, props) => (
@@ -81,6 +91,12 @@ export default function FileCadence({ currentObject}) {
     useEffect(() => {
         setLog(initialLog)
     }, [currentObject.path])
+
+    useEffect(() => {
+        if (currentObject.errors.length > 0) {
+            setRunDisabled(true)
+        }
+    }, [currentObject.errors])
 
     async function runTransaction(code, args) {
         const txId = await fcl.mutate({
@@ -133,10 +149,17 @@ export default function FileCadence({ currentObject}) {
         <>
             {currentObject.type != 'Contract' && (
                 <FloatingPanel>
-                    <ArgumentsPanel
-                        args={currentObject.arguments}
-                    />
-                    <Run onClick={run} disabled={running}>
+                    {currentObject.errors.length > 0 && (
+                        <ErrorsPanel>
+                          {currentObject.errors.join('\n')}
+                        </ErrorsPanel>
+                    )}
+                    {currentObject.arguments.length > 0 && (
+                        <ArgumentsPanel
+                          args={currentObject.arguments}
+                        />
+                    )}
+                    <Run onClick={run} disabled={running || runDisabled}>
                         {running
                             ? <Spinner color="white"/>
                             : "Run"
@@ -155,9 +178,13 @@ export default function FileCadence({ currentObject}) {
         </>
     )
 
+    let header = currentObject.path
+    if (currentObject.address) {
+        header = `${currentObject.path} (${currentObject.address})`
+    }
     return (
         <Panel
-            header={currentObject.path}
+            header={header}
             contents={contents}
         />
     )
