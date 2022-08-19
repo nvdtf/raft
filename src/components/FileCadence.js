@@ -95,6 +95,8 @@ export default function FileCadence({ currentObject }) {
     useEffect(() => {
         if (currentObject.errors.length > 0) {
             setRunDisabled(true)
+        } else {
+            setRunDisabled(false)
         }
     }, [currentObject.errors])
 

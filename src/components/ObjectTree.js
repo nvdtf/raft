@@ -9,11 +9,13 @@ const Panel = styled.div`
 `
 
 function sort(items) {
-    return items.sort((a, b) => {
-        if (a.path > b.path) return 1;
-        if (a.path < b.path) return -1;
-        return 0;
-    })
+    if (items) {
+        return items.sort((a, b) => {
+            if (a.path > b.path) return 1;
+            if (a.path < b.path) return -1;
+            return 0;
+        })
+    }
 }
 
 export default function ObjectTree({objects, currentObject, onClick}) {
