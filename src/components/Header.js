@@ -26,9 +26,6 @@ const Logo = styled.div`
     color: black;
 `
 
-const Path = styled.div`
-`
-
 const NetworkChangeStatus = styled.div`
     color: darkgray;
     font-size: 0.75em;
@@ -68,9 +65,9 @@ export default function Header({ user, repoPath, network, onNetworkChange }) {
                     </>
                 }
             </LeftSide>
-            <Path>
+            <a href={`http://${repoPath}`} target="_blank">
                 {repoPath}
-            </Path>
+            </a>
             <UserPanel>
                 <SignInOut
                     user={user}
