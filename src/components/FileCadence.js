@@ -6,7 +6,7 @@ import ArgumentsPanel from "./ArgumentsPanel"
 import Log from "./Log"
 import CodePanel from "./CodePanel"
 import Panel from "./Panel"
-import Spinner from './Spinner'
+import Button from "./ui/Button"
 
 const FloatingPanel = styled.div`
     position: absolute;
@@ -24,13 +24,7 @@ const FloatingPanel = styled.div`
     width: 500px;
 `
 
-const Run = styled.button`
-    font-family: 'Fira Code', monospace;
-    font-size: 1em;
-    background-color: green;
-    color: white;
-    border: 1px solid black;
-    padding: 5px 30px;
+const RunButton = styled(Button)`
     width: 100px;
     align-self: center;
 `
@@ -161,12 +155,13 @@ export default function FileCadence({ currentObject }) {
                           args={currentObject.arguments}
                         />
                     )}
-                    <Run onClick={run} disabled={running || runDisabled}>
-                        {running
-                            ? <Spinner color="white"/>
-                            : "Run"
-                        }
-                    </Run>
+                    <RunButton
+                        label='Run'
+                        onClick={run}
+                        color='green'
+                        disabled={runDisabled}
+                        spinner={running}
+                    />
                     <LogPanel>
                         <Log
                             log={log}

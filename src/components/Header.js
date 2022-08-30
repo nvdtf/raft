@@ -2,7 +2,7 @@ import styled from 'styled-components'
 import { useState } from 'react'
 
 import SignInOut from '../../src/components/SignInOut'
-import Spinner from './Spinner'
+import Spinner from './ui/Spinner'
 
 const Wrapper = styled.div`
     height: 100%;

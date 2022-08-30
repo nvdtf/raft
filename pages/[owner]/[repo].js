@@ -11,6 +11,7 @@ import ObjectTree from '../../src/components/ObjectTree'
 import Header from '../../src/components/Header'
 import FileCadence from '../../src/components/FileCadence'
 import Panel from '../../src/components/Panel'
+import FancyButton from '../../src/components/ui/FancyButton'
 
 const Site = styled.div`
     font-family: 'Fira Code', monospace;
@@ -53,13 +54,7 @@ const ObjectPanel = styled.div`
     overflow: scroll;
 `
 
-const FeedbackButton = styled.a`
-    font-family: 'Fira Code', monospace;
-    font-size: 1em;
-    background-color: blue;
-    color: white;
-    border: 1px solid black;
-    padding: 1px 15px;
+const FeedbackButton = styled(FancyButton)`
     align-self: center;
 `
 
@@ -144,10 +139,9 @@ export default function Repo({processedRepo, initialPath, error}) {
                             onClick={open}
                         />
                         <FeedbackButton
-                            href="mailto:navid@dapperlabs.com"
-                        >
-                            Submit Feedback
-                        </FeedbackButton>
+                            label='Submit Feedback'
+                            onClick={() => window.location = 'mailto:navid@dapperlabs.com'}
+                        />
                     </LeftPanel>
                     <ObjectPanel>
                         {currentObject.type == 'Document' &&
