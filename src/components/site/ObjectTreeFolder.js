@@ -1,6 +1,6 @@
 import styled from "styled-components"
 
-import ErrorIcon from './ErrorIcon'
+import ErrorIcon from '../ui/ErrorIcon'
 
 const Title = styled.div`
     color: blue;

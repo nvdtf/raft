@@ -1,7 +1,7 @@
 import styled from "styled-components"
 import * as fcl from "@onflow/fcl"
 
-import Button from "./ui/Button"
+import Button from "../ui/Button"
 
 const LoggedInWrapper = styled.div`
     display: flex;

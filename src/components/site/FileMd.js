@@ -1,4 +1,4 @@
-import Panel from "./Panel"
+import Panel from "../ui/Panel"
 
 import styled from "styled-components"
 import ReactMarkdown from 'react-markdown'

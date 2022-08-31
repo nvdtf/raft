@@ -5,8 +5,8 @@ import styled from "styled-components"
 import ArgumentsPanel from "./ArgumentsPanel"
 import Log from "./Log"
 import CodePanel from "./CodePanel"
-import Panel from "./Panel"
-import Button from "./ui/Button"
+import Panel from "../ui/Panel"
+import Button from "../ui/Button"
 
 const FloatingPanel = styled.div`
     position: absolute;

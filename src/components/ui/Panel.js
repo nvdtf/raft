@@ -1,7 +1,5 @@
 import styled from "styled-components"
 
-// TODO: re-use panel object across Md and Cadence files
-
 const Wrapper = styled.div`
     border-radius: 10px;
     border: 1px solid lightgrey;

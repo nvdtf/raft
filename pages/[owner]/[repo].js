@@ -6,11 +6,11 @@ import { useMainReducer } from '../../src/reducers/reducer'
 import { processRepo } from '../../src/lib/raft-api'
 
 import styled from 'styled-components'
-import FileMd from '../../src/components/FileMd'
-import ObjectTree from '../../src/components/ObjectTree'
-import Header from '../../src/components/Header'
-import FileCadence from '../../src/components/FileCadence'
-import Panel from '../../src/components/Panel'
+import FileMd from '../../src/components/site/FileMd'
+import ObjectTree from '../../src/components/site/ObjectTree'
+import Header from '../../src/components/site/Header'
+import FileCadence from '../../src/components/cadence/FileCadence'
+import Panel from '../../src/components/ui/Panel'
 import FancyButton from '../../src/components/ui/FancyButton'
 
 const Site = styled.div`

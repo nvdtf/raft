@@ -3,7 +3,7 @@ import {toHtml} from 'hast-util-to-html'
 import styled from "styled-components"
 import { useState, useEffect, useContext } from 'react'
 
-import { HighlighterContext } from "../context"
+import { HighlighterContext } from "../../context"
 
 const Wrapper = styled.div`
     white-space: pre;
