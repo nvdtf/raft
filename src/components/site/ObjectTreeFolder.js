@@ -12,7 +12,6 @@ const Item = styled.div`
     cursor: pointer;
     display: flex;
     gap: 5px;
-    height: 20px;
 `
 
 const NonCurrentItem = styled.div`
@@ -42,7 +41,7 @@ export default function ObjectTreeFolder({title, items, currentObject, onClick})
             {items.map(item => (
                 <Item onClick={() => onClick(item.path)}>
                     {item.errors.length > 0 && (
-                        <ErrorIcon/>
+                        <ErrorIcon width="16px"/>
                     )}
                     {item.path == currentObject.path
                         ? <CurrentItem>{item.path}</CurrentItem>
