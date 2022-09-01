@@ -67,7 +67,7 @@ export default function Header({ user, repoPath, network, onNetworkChange }) {
             </LeftSide>
             <Center>
                 <a href={`http://${repoPath}`} target="_blank">
-                    {repoPath}
+                    github.com/{repoPath}
                 </a>
                 <select value={network} onChange={(e) => updateNetwork(e.target.value)}>
                     <option>Mainnet</option>

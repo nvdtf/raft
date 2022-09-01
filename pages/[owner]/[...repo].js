@@ -83,27 +83,38 @@ export default function Repo({processedRepo, initialPath, error}) {
 
     const [user, setUser] = useState({})
 
+    const router = useRouter()
+
     useEffect(() => {
         if (initialPath) {
+            document.title = 'Raft | ' + repo.path + '/' + initialPath
             open(initialPath)
         }
-    }, [initialPath])
+    }, [])
 
     useEffect(() => {
         fcl.currentUser().subscribe(user => setUser(user))
     }, [])
-
-    const router = useRouter()
 
     function onNetworkChange(newNetwork) {
 
         fcl.unauthenticate()
 
         if (newNetwork == 'Testnet') {
-            router.push(window.location.pathname + '?testnet')
+            window.location.href = window.location.pathname + '?testnet'
         } else if (newNetwork == 'Mainnet') {
-            router.push(window.location.pathname.split('?')[0])
+            window.location.href = window.location.pathname.split('?')[0]
         }
+    }
+
+    function openPath(path) {
+        router.push({
+            pathname: '/' + repo.path + '/' + path,
+        }, undefined, { shallow: true })
+
+        document.title = 'Raft | ' + repo.path + '/' + path
+
+        open(path)
     }
 
     return (
@@ -131,7 +142,7 @@ export default function Repo({processedRepo, initialPath, error}) {
                         <ObjectTree
                             objects={[repo]}
                             currentObject={currentObject}
-                            onClick={open}
+                            onClick={openPath}
                         />
                     </LeftPanel>
                     <ObjectPanel>
@@ -174,7 +185,7 @@ export async function getServerSideProps(context) {
     }
 
     const processedRepo = {
-        path: `github.com/${owner}/${repo}`,
+        path: `${owner}/${repo}`,
         network,
         transactionFiles: [],
         documentFiles: [],

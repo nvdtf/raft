@@ -152,7 +152,7 @@ export default function FileCadence({ currentObject }) {
                     )}
                     {currentObject.arguments.length > 0 && (
                         <ArgumentsPanel
-                          args={currentObject.arguments}
+                            currentObject={currentObject}
                         />
                     )}
                     <RunButton

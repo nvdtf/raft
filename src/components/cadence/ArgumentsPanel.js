@@ -8,14 +8,15 @@ const Wrapper = styled.div`
     gap: 10px;
 `
 
-export default function ArgumentsPanel({ args }) {
+export default function ArgumentsPanel({ currentObject }) {
     return (
         <Wrapper>
-            {args && args.map(arg => (
+            {currentObject.arguments && currentObject.arguments.map(arg => (
                 <ArgumentInput
                     label={arg.name}
                     type={arg.type}
                     onChange={(v) => arg.value = v}
+                    key={currentObject.path + arg.name + arg.type}
                 />
             ))}
         </Wrapper>

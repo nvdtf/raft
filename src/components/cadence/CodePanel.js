@@ -16,15 +16,17 @@ export default function CodePanel({ code }) {
     const highlighter = useHighlighter()
 
     const prettify = async () => {
-        const scope = highlighter.flagToScope('cadence')
-        const tree = highlighter.highlight(code, scope)
-        setPrettyCode(toHtml(tree))
+        if (highlighter) {
+            const scope = highlighter.flagToScope('cadence')
+            const tree = highlighter.highlight(code, scope)
+            setPrettyCode(toHtml(tree))
+        }
     }
 
     useEffect(() => {
         setPrettyCode(code)
         prettify()
-    }, [code])
+    }, [code, highlighter])
 
     return (
         <Wrapper dangerouslySetInnerHTML={{ __html: prettyCode}}/>

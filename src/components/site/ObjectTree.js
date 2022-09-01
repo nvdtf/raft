@@ -22,29 +22,29 @@ export default function ObjectTree({objects, currentObject, onClick}) {
     return (
         <Panel>
             {objects.map(obj => (
-                <div>
-                    <ObjectTreeFolder
+                <div key='objectTree'>
+                    <ObjectTreeFolder key='Documents'
                         title='Documents'
                         items={sort(obj.documentFiles)}
                         currentObject={currentObject}
                         onClick={onClick}
                     />
 
-                    <ObjectTreeFolder
+                    <ObjectTreeFolder key='Contracts'
                         title='Contracts'
                         items={sort(obj.contractFiles)}
                         currentObject={currentObject}
                         onClick={onClick}
                     />
 
-                    <ObjectTreeFolder
+                    <ObjectTreeFolder key='Scripts'
                         title='Scripts'
                         items={sort(obj.scriptFiles)}
                         currentObject={currentObject}
                         onClick={onClick}
                     />
 
-                    <ObjectTreeFolder
+                    <ObjectTreeFolder key='Transactions'
                         title='Transactions'
                         items={sort(obj.transactionFiles)}
                         currentObject={currentObject}

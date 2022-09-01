@@ -39,7 +39,7 @@ export default function ObjectTreeFolder({title, items, currentObject, onClick})
                 {title}
             </Title>
             {items.map(item => (
-                <Item onClick={() => onClick(item.path)}>
+                <Item onClick={() => onClick(item.path)} key={item.path}>
                     {item.errors.length > 0 && (
                         <ErrorIcon width="16px"/>
                     )}
