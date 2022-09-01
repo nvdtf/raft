@@ -11,7 +11,6 @@ import ObjectTree from '../../src/components/site/ObjectTree'
 import Header from '../../src/components/site/Header'
 import FileCadence from '../../src/components/cadence/FileCadence'
 import Panel from '../../src/components/ui/Panel'
-import FancyButton from '../../src/components/ui/FancyButton'
 
 const Site = styled.div`
     font-family: 'Fira Code', monospace;
@@ -38,12 +37,12 @@ const LeftPanel = styled.div`
     background-color: white;
     padding-top: 10px;
     padding-right: 10px;
+    padding-bottom: 10px;
     height: 100%;
     border-right: 1px solid lightgray;
     width: fit-content;
-    display: flex;
-    flex-direction: column;
-    gap: 50px;
+    min-width: 400px;
+    overflow: scroll;
 `
 
 const ObjectPanel = styled.div`
@@ -52,10 +51,6 @@ const ObjectPanel = styled.div`
     height: 100%;
     flex-grow: 1;
     overflow: scroll;
-`
-
-const FeedbackButton = styled(FancyButton)`
-    align-self: center;
 `
 
 const ErrorPanel = styled.div`
@@ -138,10 +133,6 @@ export default function Repo({processedRepo, initialPath, error}) {
                             currentObject={currentObject}
                             onClick={open}
                         />
-                        <FeedbackButton
-                            label='Submit Feedback'
-                            onClick={() => window.location = 'mailto:navid@dapperlabs.com'}
-                        />
                     </LeftPanel>
                     <ObjectPanel>
                         {currentObject.type == 'Document' &&
@@ -174,8 +165,16 @@ export async function getServerSideProps(context) {
         network = 'Testnet'
     }
 
-    const repo = {
-        path: `github.com/${context.query.owner}/${context.query.repo}`,
+    const owner = context.query.owner
+    const repo = context.query.repo[0]
+
+    let initialPath = 'README.md'
+    if (context.query.repo.length > 1) {
+        initialPath = context.query.repo.slice(1).join('/')
+    }
+
+    const processedRepo = {
+        path: `github.com/${owner}/${repo}`,
         network,
         transactionFiles: [],
         documentFiles: [],
@@ -184,24 +183,24 @@ export async function getServerSideProps(context) {
     }
 
     try {
-        const result = await processRepo(context.query.owner, context.query.repo, network)
+        const result = await processRepo(owner, repo, network)
 
-        repo.transactionFiles = result.transactions
-        repo.documentFiles = result.documents
-        repo.scriptFiles = result.scripts
-        repo.contractFiles = result.contracts
+        processedRepo.transactionFiles = result.transactions
+        processedRepo.documentFiles = result.documents
+        processedRepo.scriptFiles = result.scripts
+        processedRepo.contractFiles = result.contracts
 
         return {
             props: {
-                processedRepo: repo,
-                initialPath: 'README.md',
+                processedRepo,
+                initialPath,
                 error: '',
             },
         }
     } catch (error) {
         return {
             props: {
-                processedRepo: repo,
+                processedRepo,
                 initialPath: '',
                 error: JSON.stringify(error),
             },

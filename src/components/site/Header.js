@@ -3,6 +3,7 @@ import { useState } from 'react'
 
 import SignInOut from '../auth/SignInOut'
 import Spinner from '../ui/Spinner'
+import FancyButton from '../ui/FancyButton'
 
 const Wrapper = styled.div`
     height: 100%;
@@ -14,6 +15,12 @@ const Wrapper = styled.div`
 `
 
 const LeftSide = styled.div`
+    display: flex;
+    gap: 15px;
+    align-items: center;
+`
+
+const Center = styled.div`
     display: flex;
     gap: 15px;
     align-items: center;
@@ -50,8 +57,18 @@ export default function Header({ user, repoPath, network, onNetworkChange }) {
         <Wrapper>
             <LeftSide>
                 <Logo>
-                    Raft
+                    Raft v0.1.0
                 </Logo>
+                <FancyButton
+                    label='Submit Feedback'
+                    onClick={() => window.location = 'mailto:navid@dapperlabs.com'}
+                />
+
+            </LeftSide>
+            <Center>
+                <a href={`http://${repoPath}`} target="_blank">
+                    {repoPath}
+                </a>
                 <select value={network} onChange={(e) => updateNetwork(e.target.value)}>
                     <option>Mainnet</option>
                     <option>Testnet</option>
@@ -64,10 +81,7 @@ export default function Header({ user, repoPath, network, onNetworkChange }) {
                         <Spinner color="blue"/>
                     </>
                 }
-            </LeftSide>
-            <a href={`http://${repoPath}`} target="_blank">
-                {repoPath}
-            </a>
+            </Center>
             <UserPanel>
                 <SignInOut
                     user={user}

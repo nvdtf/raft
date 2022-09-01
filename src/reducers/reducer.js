@@ -1,4 +1,5 @@
 import { useReducer } from "react"
+import { useRouter } from 'next/router'
 
 const initialState = {
     repo: {},
@@ -22,6 +23,11 @@ function reducer(state, action) {
                 state.repo.contractFiles,
             )
             const item = allFiles.find(item => item.path == action.path)
+            // window.location.href = item.path
+            // const router = useRouter()
+            // router.push({
+            //     pathname: action.path,
+            // }, undefined, { shallow: true })
             return {
                 ...state,
                 currentObject: {
