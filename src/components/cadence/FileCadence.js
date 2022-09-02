@@ -8,6 +8,8 @@ import CodePanel from "./CodePanel"
 import Panel from "../ui/Panel"
 import Button from "../ui/Button"
 
+import { prettifyError } from "../../lib/util"
+
 const FloatingPanel = styled.div`
     position: absolute;
     top: 70px;
@@ -134,7 +136,7 @@ export default function FileCadence({ currentObject }) {
             }
             l('Result: ' + JSON.stringify(result, null, '\t'))
         } catch (error) {
-            l('Failed! ' + error)
+            l('Failed! ' + prettifyError(error.message))
             console.log(error)
         }
 

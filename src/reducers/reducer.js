@@ -26,6 +26,7 @@ function reducer(state, action) {
             if (!item) {
                 throw new Error(`file ${action.path} does not exist`)
             }
+            item.arguments?.map(arg => delete arg.value)
             return {
                 ...state,
                 currentObject: {
