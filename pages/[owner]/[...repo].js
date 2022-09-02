@@ -86,14 +86,28 @@ export default function Repo({processedRepo, initialPath, error}) {
     const router = useRouter()
 
     useEffect(() => {
-        if (initialPath) {
-            document.title = 'Raft | ' + repo.path + '/' + initialPath
-            open(initialPath)
-        }
+        openPath(initialPath)
     }, [])
 
     useEffect(() => {
         fcl.currentUser().subscribe(user => setUser(user))
+    }, [])
+
+    useEffect(() => {
+        const handleRouteChange = (url, { shallow }) => {
+            const urlPrefix = '/' + repo.path
+            if (url.startsWith(urlPrefix) && url.length > urlPrefix.length) {
+                const path = url.slice(urlPrefix.length + 1)
+                openPath(path)
+            } else if(url === urlPrefix) {
+                openPath(initialPath)
+            }
+        }
+
+        router.events.on('routeChangeStart', handleRouteChange)
+        return () => {
+            router.events.off('routeChangeStart', handleRouteChange)
+        }
     }, [])
 
     function onNetworkChange(newNetwork) {
@@ -107,14 +121,21 @@ export default function Repo({processedRepo, initialPath, error}) {
         }
     }
 
-    function openPath(path) {
+    function pushPath(path) {
         router.push({
             pathname: '/' + repo.path + '/' + path,
         }, undefined, { shallow: true })
+    }
 
-        document.title = 'Raft | ' + repo.path + '/' + path
-
-        open(path)
+    function openPath(path) {
+        if (path) {
+            if(path === initialPath) {
+                document.title = 'Raft | ' + repo.path
+            } else {
+                document.title = 'Raft | ' + repo.path + '/' + path
+            }
+            open(path)
+        }
     }
 
     return (
@@ -142,7 +163,7 @@ export default function Repo({processedRepo, initialPath, error}) {
                         <ObjectTree
                             objects={[repo]}
                             currentObject={currentObject}
-                            onClick={openPath}
+                            onClick={pushPath}
                         />
                     </LeftPanel>
                     <ObjectPanel>
