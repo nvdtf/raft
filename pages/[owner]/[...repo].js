@@ -49,7 +49,7 @@ const ObjectPanel = styled.div`
     background-color: whitesmoke;
     padding: 10px;
     height: 100%;
-    flex-grow: 1;
+    width: 100%;
     overflow: scroll;
 `
 
