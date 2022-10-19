@@ -1,6 +1,11 @@
 export async function processRepo(owner, repo, network) {
+    let serverURL = process.env.RAFT_API_URL
+    if (!serverURL) {
+        serverURL = 'http://localhost:8080/'
+    }
+    console.log(serverURL)
     const rawResponse = await fetch(
-        `${process.env.RAFT_API_URL}processRepo`,
+        `${serverURL}processRepo`,
         {
             method: "POST",
             body: JSON.stringify({
