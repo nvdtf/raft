@@ -3,7 +3,7 @@ export async function processRepo(owner, repo, network) {
     if (!serverURL) {
         serverURL = 'http://localhost:8080/'
     }
-    console.log(serverURL)
+
     const rawResponse = await fetch(
         `${serverURL}processRepo`,
         {
