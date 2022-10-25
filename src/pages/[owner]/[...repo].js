@@ -2,15 +2,15 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/router';
 import * as fcl from "@onflow/fcl"
 
-import { useMainReducer } from '../../src/reducers/reducer'
-import { processRepo } from '../../src/lib/raft-api'
+import { useMainReducer } from '../../reducers/reducer'
+import { processRepo } from '../../lib/raft-api'
 
 import styled from 'styled-components'
-import FileMd from '../../src/components/site/FileMd'
-import ObjectTree from '../../src/components/site/ObjectTree'
-import Header from '../../src/components/site/Header'
-import FileCadence from '../../src/components/cadence/FileCadence'
-import Panel from '../../src/components/ui/Panel'
+import FileMd from '../../components/site/FileMd'
+import ObjectTree from '../../components/site/ObjectTree'
+import Header from '../../components/site/Header'
+import FileCadence from '../../components/cadence/FileCadence'
+import Panel from '../../components/ui/Panel'
 
 const Site = styled.div`
     font-family: 'Fira Code', monospace;

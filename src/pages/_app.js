@@ -1,8 +1,8 @@
-import '../styles/globals.css'
+import '../../styles/globals.css'
 
 import * as fcl from "@onflow/fcl"
 
-import HighlighterProvider from "../src/context/HighlighterProvider"
+import HighlighterProvider from "../context/HighlighterProvider"
 
 function MyApp({ Component, pageProps }) {
 
