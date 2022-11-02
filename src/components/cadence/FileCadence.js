@@ -1,6 +1,8 @@
 import * as fcl from "@onflow/fcl"
 import { useEffect, useState } from "react"
 
+import * as ga from '../../lib/google-analytics'
+
 import styled from "styled-components"
 import ArgumentsPanel from "./ArgumentsPanel"
 import Log from "./Log"
@@ -47,21 +49,37 @@ const ErrorsPanel = styled.div`
     overflow: scroll;
 `
 
+function mapArgs(arg, t, args) {
+    return args?.map(a => {
+        // todo path
+        // todo dictionary
+        // todo optional + [array, dictionary, path]
+
+        // optional
+        if (a.type.indexOf('?') > 0) {
+            let type = a.type.slice(0, a.type.indexOf('?'))
+            if (a.value.length > 0) {
+                return arg(a.value, t.Optional(t[type]))
+            } else {
+                return arg(null, t.Optional(t[type]))
+            }
+        }
+
+        // array
+        if (a.type.charAt(0) == '[' && a.type.charAt(a.type.length-1) == ']') {
+            let type = a.type.slice(1, a.type.length-1)
+            return arg(a.value.split(','), t.Array(t[type]))
+        }
+
+        // others
+        return arg(a.value, t[a.type])
+    })
+}
+
 async function runScript(code, args) {
     const result = await fcl.query({
         cadence: code,
-        // args: (arg, t) => [
-        //     arg("test", t.String)
-        // ],
-        // args: [
-        //     cadut.mapArgument("test", "String")
-        // ]
-        // args: (arg, t) => [
-        //     arg("test", t["String"])
-        // ]
-        args: (arg, t) => args?.map(a => {
-            return arg(a.value, t[a.type])
-        })
+        args: (arg, t) => mapArgs(arg, t, args)
     })
     return result
 }
@@ -103,9 +121,7 @@ export default function FileCadence({ currentObject }) {
             payer: fcl.currentUser,
             authorizations: [fcl.currentUser],
             limit: 9999,
-            args: (arg, t) => args?.map(a => {
-                return arg(a.value, t[a.type])
-            })
+            args: (arg, t) => mapArgs(arg, t, args)
         })
 
         l('Transaction ID: ' + txId)
@@ -130,8 +146,22 @@ export default function FileCadence({ currentObject }) {
         let result
         try {
             if (isScript) {
+                ga.event({
+                    action: "script",
+                    params : {
+                        file: currentObject.path
+                    }
+                })
+
                 result = await runScript(code, currentObject.arguments)
             } else {
+                ga.event({
+                    action: "transaction",
+                    params : {
+                        file: currentObject.path
+                    }
+                })
+
                 result = await runTransaction(code, currentObject.arguments)
             }
             l('Result: ' + JSON.stringify(result, null, '\t'))

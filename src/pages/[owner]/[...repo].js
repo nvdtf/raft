@@ -4,6 +4,7 @@ import * as fcl from "@onflow/fcl"
 
 import { useMainReducer } from '../../reducers/reducer'
 import { processRepo } from '../../lib/raft-api'
+import * as ga from '../../lib/google-analytics'
 
 import styled from 'styled-components'
 import FileMd from '../../components/site/FileMd'
@@ -70,9 +71,11 @@ export default function Repo({processedRepo, initialPath, error}) {
     if (processedRepo.network == 'Mainnet') {
         fcl.config().put('accessNode.api', 'https://rest-mainnet.onflow.org')
         fcl.config().put('discovery.wallet', 'https://fcl-discovery.onflow.org/authn')
+        fcl.config().put('discovery.authn.include', ["0xead892083b3e2c6c", "0xe5cd26afebe62781"])
     } else if (processedRepo.network == 'Testnet') {
         fcl.config().put('accessNode.api', 'https://rest-testnet.onflow.org')
         fcl.config().put('discovery.wallet', 'https://fcl-discovery.onflow.org/testnet/authn')
+        fcl.config().put('discovery.authn.include', ["0x82ec283f88a62e65", "0x9d2e44203cb13051"])
     }
 
     const {
@@ -95,6 +98,8 @@ export default function Repo({processedRepo, initialPath, error}) {
 
     useEffect(() => {
         const handleRouteChange = (url, { shallow }) => {
+            ga.pageview(url)
+
             const urlPrefix = '/' + repo.path
             if (url.startsWith(urlPrefix) && url.length > urlPrefix.length) {
                 const path = url.slice(urlPrefix.length + 1)
@@ -122,17 +127,29 @@ export default function Repo({processedRepo, initialPath, error}) {
     }
 
     function pushPath(path) {
+        var q = null
+        if (processedRepo.network == 'Testnet') {
+            q = 'testnet'
+        }
+
         router.push({
             pathname: '/' + repo.path + '/' + path,
+            query: q,
         }, undefined, { shallow: true })
     }
 
     function openPath(path) {
         if (path) {
+            var prefix = 'Raft | '
+            if (path.indexOf('?') > 0) {
+                path = path.slice(0, path.indexOf('?'))
+                prefix = 'Raft <testnet> | '
+            }
+
             if(path === initialPath) {
-                document.title = 'Raft | ' + repo.path
+                document.title = prefix + repo.path
             } else {
-                document.title = 'Raft | ' + repo.path + '/' + path
+                document.title = prefix + repo.path + '/' + path
             }
             open(path)
         }
@@ -203,6 +220,9 @@ export async function getServerSideProps(context) {
     let initialPath = 'README.md'
     if (context.query.repo.length > 1) {
         initialPath = context.query.repo.slice(1).join('/')
+        if (initialPath.indexOf('?') > 0) {
+            initialPath = initialPath.slice(0, initialPath.indexOf('?'))
+        }
     }
 
     const processedRepo = {
