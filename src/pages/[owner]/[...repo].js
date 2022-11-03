@@ -89,7 +89,7 @@ export default function Repo({processedRepo, initialPath, error}) {
     const router = useRouter()
 
     useEffect(() => {
-        openPath(initialPath)
+        pushPath(initialPath)
     }, [])
 
     useEffect(() => {
