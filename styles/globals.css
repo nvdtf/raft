@@ -14,3 +14,6 @@ a {
 * {
   box-sizing: border-box;
 }
+
+/* Google Font */
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&display=swap');
