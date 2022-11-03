@@ -18,10 +18,10 @@ function reducer(state, action) {
         case "open":
             const allFiles =
                 state.repo.documentFiles.concat(
-                state.repo.scriptFiles,
-                state.repo.transactionFiles,
-                state.repo.contractFiles,
-            )
+                    state.repo.scriptFiles,
+                    state.repo.transactionFiles,
+                    state.repo.contractFiles,
+                )
             const item = allFiles.find(item => item.path == action.path)
             if (!item) {
                 throw new Error(`file ${action.path} does not exist`)
