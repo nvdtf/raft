@@ -15,6 +15,7 @@ export default function ArgumentsPanel({ currentObject }) {
                 <ArgumentInput
                     label={arg.name}
                     type={arg.type}
+                    initialValue={arg.value}
                     onChange={(v) => arg.value = v}
                     key={currentObject.path + arg.name + arg.type + idx}
                 />

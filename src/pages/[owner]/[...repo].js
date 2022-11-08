@@ -89,7 +89,7 @@ export default function Repo({processedRepo, initialPath, error}) {
     const router = useRouter()
 
     useEffect(() => {
-        pushPath(initialPath)
+        openPath(initialPath)
     }, [])
 
     useEffect(() => {
@@ -188,6 +188,7 @@ export default function Repo({processedRepo, initialPath, error}) {
                             <FileMd
                                 header={currentObject.path}
                                 content={currentObject.contents}
+                                repo={repo.path}
                             />
                         }
                         {(currentObject.type == 'Script' ||
@@ -241,6 +242,23 @@ export async function getServerSideProps(context) {
         processedRepo.documentFiles = result.documents
         processedRepo.scriptFiles = result.scripts
         processedRepo.contractFiles = result.contracts
+
+        const allFiles =
+            processedRepo.documentFiles.concat(
+                processedRepo.scriptFiles,
+                processedRepo.transactionFiles,
+                processedRepo.contractFiles,
+            )
+        const initialItem = allFiles.find(item => item.path == initialPath)
+        if (!initialItem) {
+            throw `file ${initialPath} is not available`
+        }
+
+        initialItem.arguments?.map(arg => {
+            if (context.query.hasOwnProperty(arg.name)) {
+                arg.value = context.query[arg.name]
+            }
+        })
 
         return {
             props: {

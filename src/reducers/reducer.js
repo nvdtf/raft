@@ -1,5 +1,4 @@
 import { useReducer } from "react"
-import { useRouter } from 'next/router'
 
 const initialState = {
     repo: {},
@@ -26,7 +25,11 @@ function reducer(state, action) {
             if (!item) {
                 throw new Error(`file ${action.path} does not exist`)
             }
-            item.arguments?.map(arg => arg.value = '')
+            item.arguments?.map(arg => {
+                if (arg.value == null) {
+                    arg.value = ''
+                }
+            })
             return {
                 ...state,
                 currentObject: {

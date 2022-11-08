@@ -1,3 +1,5 @@
+import { useState } from "react"
+
 import styled from "styled-components"
 
 const Container = styled.div`
@@ -17,7 +19,10 @@ const Input = styled.input`
 const Label = styled.div`
 `
 
-export default function ArgumentInput({label, type, onChange}) {
+export default function ArgumentInput({label, type, initialValue, onChange}) {
+
+    const [value, setValue] = useState(initialValue)
+
     return (
         <Container>
             <Label>
@@ -25,7 +30,11 @@ export default function ArgumentInput({label, type, onChange}) {
             </Label>
             <Input
                 type="text"
-                onChange={(e) => onChange(e.target.value)}
+                value={value}
+                onChange={(e) => {
+                    setValue(e.target.value)
+                    onChange(e.target.value)
+                }}
             />
         </Container>
     )
