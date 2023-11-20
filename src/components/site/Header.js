@@ -60,8 +60,8 @@ export default function Header({ user, repoPath, network, onNetworkChange }) {
                     Raft v0.1.0
                 </Logo>
                 <FancyButton
-                    label='Submit Feedback'
-                    onClick={() => window.location = 'mailto:navid@dapperlabs.com'}
+                    label='?'
+                    onClick={() => window.open('http://raft.page/nvdtf/welcome-to-raft')}
                 />
 
             </LeftSide>
